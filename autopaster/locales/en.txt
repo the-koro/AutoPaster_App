@@ -1,0 +1,21 @@
+AppName=AutoPaster
+Author=Theko
+
+Interval=Interval (seconds):
+RandomOffset=Random Offset (seconds):
+MaxPasteTimes=Max Paste Times:
+
+PressEnter=Press Enter after paste
+AccurateEnter=Accurate Enter
+
+StartButton=Start (F8)
+StopButton=Stop (F8)
+HelpButton=Help
+
+Stopped=Stopped
+Running=Running...
+InvalidInterval=Invalid Interval
+InvalidRandomOffset=Invalid Random Offset
+
+HelpTitle=Help
+Warning=Warning
