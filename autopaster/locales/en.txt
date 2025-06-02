@@ -19,3 +19,32 @@ InvalidRandomOffset=Invalid Random Offset
 
 HelpTitle=Help
 Warning=Warning
+
+WarningTooFastInterval=You have set the interval below 0.2 seconds.
+\
+\⚠️ This may:
+\ - cause lag in the target application,
+\ - get you banned or muted in chat apps,
+\ - overload your system and cause freezes.
+\ Use with caution!
+
+HowToUseAppLabel=AutoPaster by Theko
+
+HowToUseUseLabel=📌 Usage Instructions:
+HowToUseUse=1. Enter the paste interval in seconds.
+\2. Select the text you want to paste.
+\3. Copy the text to clipboard.
+\4. Click 'Start' and the text will be
+\ automatically pasted into the selected input field.
+
+HowToUseHotkeysLabel=📌 Hotkeys:
+HowToUseHotkeys='F1' to open help.
+\'F4' to reset and stop.
+\'F8' to start/stop.
+
+HowToUseImportantLabel=⚠️ Important:
+HowToUseImportant=- If interval is less than 0.2 s, you may experience:
+\ - Lag in the target application.
+\ - Ban or mute in chats.
+\ - System overload or freezing.
+\ Use with caution!

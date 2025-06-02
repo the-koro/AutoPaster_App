@@ -1,45 +1,72 @@
 import tkinter as tk
 from tkinter import ttk
 
-def show_help_window(root):
-        help_window = tk.Toplevel(root)
-        help_window.title("Help")
-        help_window.geometry("480x400")
-        help_window.resizable(False, False)
+from autopaster.core.locale_load import load_text
 
-        # Canvas for scroll (we won't add scrollbar)
-        canvas = tk.Canvas(help_window, highlightthickness=0)
+class HelpWindow:
+    def __init__(self, root):
+        self.root = root
+        self.help_window = None
+
+        self.helpwindow_title = load_text("HelpTitle")
+        self.howtouseapp_label = load_text("HowToUseAppLabel")
+        self.howtouseuse_label = load_text("HowToUseUseLabel")
+        self.howtouseuse_text = load_text("HowToUseUse")
+        self.howtousehotkeys_label = load_text("HowToUseHotkeysLabel")
+        self.howtousehotkeys_text = load_text("HowToUseHotkeys")
+        self.howtouseimportant_label = load_text("HowToUseImportantLabel")
+        self.howtouseimportant_text = load_text("HowToUseImportant")
+
+
+    def show(self):
+        if self.help_window is not None and self.help_window.winfo_exists():
+            # If the window already exists, just bring it to the front
+            self.help_window.lift()
+            return
+
+        self.help_window = tk.Toplevel(self.root)
+        self.help_window.title(self.helpwindow_title)
+        self.help_window.resizable(False, False)
+
+        # Create a canvas and a frame inside it, so we can dynamically resize the window
+        canvas = tk.Canvas(self.help_window, highlightthickness=0)
         canvas.pack(fill="both", expand=True)
 
-        # Frame inserted into canvas
         frame = ttk.Frame(canvas)
-        canvas.create_window((0, 0), window=frame, anchor="nw")
+        canvas.create_window((0, 0), window=frame, anchor="nw", tags="frame")
 
-        # Make frame auto-resize with the window
         def on_resize(event):
+            # On resize, adjust the size of the frame and the scrollregion
             canvas.itemconfig("frame", width=event.width)
             canvas.configure(scrollregion=canvas.bbox("all"))
 
         canvas.bind("<Configure>", on_resize)
 
-        # Use tag to later modify the window size
-        canvas.create_window((0, 0), window=frame, anchor="nw", tags="frame")
+        # Create the labels
+        labels = [
+            (self.howtouseapp_label, ("Segoe UI", 15, "bold")),
+            (self.howtouseuse_label, ("Segoe UI", 12, "bold")),
+            (self.howtouseuse_text, None),
+            (self.howtousehotkeys_label, ("Segoe UI", 12, "bold")),
+            (self.howtousehotkeys_text, None),
+            (self.howtouseimportant_label, ("Segoe UI", 12, "bold")),
+            (self.howtouseimportant_text, None),
+        ]
 
-        # Add text
-        ttk.Label(frame, text="AutoPaster by Theko", font=("Segoe UI", 15, "bold")).pack(anchor="w", padx=10, pady=(15, 0))
-        ttk.Label(frame, text="📌 Usage Instructions:", font=("Segoe UI", 10, "bold")).pack(anchor="w", padx=10, pady=(10, 0))
-        ttk.Label(frame, text="1. Enter the paste interval in seconds.", wraplength=460).pack(anchor="w", padx=10, pady=2)
-        ttk.Label(frame, text="2. Select the text you want to paste.", wraplength=460).pack(anchor="w", padx=10, pady=2)
-        ttk.Label(frame, text="3. Copy the text to clipboard.", wraplength=460).pack(anchor="w", padx=10, pady=2)
-        ttk.Label(frame, text="4. Click 'Start' and the text will be automatically pasted into the selected input field.", wraplength=460).pack(anchor="w", padx=10, pady=2)
-        ttk.Label(frame, text="- Hotkeys: 'F8' to start/stop.", wraplength=460).pack(anchor="w", padx=10, pady=2)
+        for text, font in labels:
+            kwargs = {"text": text, "anchor": "w", "justify": "left"}
+            if font:
+                kwargs["font"] = font
+            label = ttk.Label(frame, **kwargs)
+            label.pack(anchor="w", padx=10, pady=5)
 
-        ttk.Label(frame, text="📌 Important:", font=("Segoe UI", 10, "bold")).pack(anchor="w", padx=10, pady=(10, 0))
-        ttk.Label(frame, text="- If interval is less than 0.2 s, you may experience:", wraplength=460).pack(anchor="w", padx=10, pady=2)
-        ttk.Label(frame, text="- Lag in the target application.", wraplength=460).pack(anchor="w", padx=10, pady=0)
-        ttk.Label(frame, text="- Ban or mute in chats.", wraplength=460).pack(anchor="w", padx=10, pady=0)
-        ttk.Label(frame, text="- System overload or freezing.", wraplength=460).pack(anchor="w", padx=10, pady=0)
-        ttk.Label(frame, text="Use with caution!", wraplength=460).pack(anchor="w", padx=10, pady=0)
-
+        # Update the window
+        self.help_window.update_idletasks()
         frame.update_idletasks()
-        canvas.config(scrollregion=canvas.bbox("all"))
+
+        # Automatically adjust the size
+        max_width = max(label.winfo_reqwidth() for label in frame.winfo_children()) + 20
+        total_height = canvas.bbox("all")[3]
+
+        # Apply the new size
+        self.help_window.geometry(f"{max_width}x{total_height}")

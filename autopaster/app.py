@@ -4,39 +4,25 @@ from tkinter import ttk, messagebox
 import threading
 
 from autopaster.core.hotkeys import register_hotkeys
+from autopaster.core.locale_detector import detect_locale
 from autopaster.core.locale_load import load_text
 from autopaster.core.pasting import paste
-from autopaster.ui.help_window import show_help_window
+from autopaster.ui.help_window import HelpWindow
 
 # Main class
 class AutoPaster:
     def __init__(self, root):
         self.root = root
-        self.root.title("AutoPaster")
+
+        print("AutoPaster started")
+        print("locale: ", detect_locale())
+
+        self.load_texts()
+
+        self.root.title(self.app_name)
         self.root.geometry("280x320")
         self.root.resizable(False, False)
         self.running = False
-
-        self.app_name = load_text("AppName")
-
-        self.interval_text = load_text("Interval")
-        self.random_offset_text = load_text("RandomOffset")
-        self.max_paste_times_text = load_text("MaxPasteTimes")
-
-        self.press_enter_text = load_text("PressEnter")
-        self.accurate_enter_text = load_text("AccurateEnter")
-
-        self.start_button_text = load_text("StartButton")
-        self.stop_button_text = load_text("StopButton")
-        self.help_button_text = load_text("HelpButton")
-
-        self.stopped_text = load_text("Stopped")
-        self.running_text = load_text("Running")
-        self.invalid_interval_text = load_text("InvalidInterval")
-        self.invalid_random_offset_text = load_text("InvalidRandomOffset")
-
-        self.help_title_text = load_text("HelpTitle")
-        self.warning_text = load_text("Warning")
 
         # Program label
         self.program_label = ttk.Label(root, text=self.app_name, font=("Segoe UI", 15, "bold"))
@@ -101,11 +87,39 @@ class AutoPaster:
         # Warning
         self.warning_shown = False
 
+        # Help window
+        self.help_window = HelpWindow(root)
+
         # Hotkeys
         register_hotkeys(self)
 
-    def show_help(self):
-        show_help_window(self.root)
+    def load_texts(self):
+        # Load texts
+        self.app_name = load_text("AppName")
+
+        self.interval_text = load_text("Interval")
+        self.random_offset_text = load_text("RandomOffset")
+        self.max_paste_times_text = load_text("MaxPasteTimes")
+
+        self.press_enter_text = load_text("PressEnter")
+        self.accurate_enter_text = load_text("AccurateEnter")
+
+        self.start_button_text = load_text("StartButton")
+        self.stop_button_text = load_text("StopButton")
+        self.help_button_text = load_text("HelpButton")
+
+        self.stopped_text = load_text("Stopped")
+        self.running_text = load_text("Running")
+        self.invalid_interval_text = load_text("InvalidInterval")
+        self.invalid_random_offset_text = load_text("InvalidRandomOffset")
+
+        self.warning_too_fast_interval_text = load_text("WarningTooFastInterval")
+
+        self.help_title_text = load_text("HelpTitle")
+        self.warning_text = load_text("Warning")
+
+    def show_help(self):        
+        self.help_window.show()
 
     def toggle_start_stop(self):
         self.progress_label.config(text="N/A")
@@ -131,13 +145,7 @@ class AutoPaster:
             if interval < 0.2:
                 if self.warning_shown == False:
                     self.warning_shown = True
-                    messagebox.showwarning("Warning",
-                        "You have set the interval below 0.2 seconds.\n\n"
-                        "⚠️ This may:\n"
-                        "- cause lag in the target application,\n"
-                        "- get you banned or muted in chat apps,\n"
-                        "- overload your system and cause freezes.\n\n"
-                        "Use with caution!")
+                    messagebox.showwarning(self.warning_text, self.warning_too_fast_interval_text)
 
             self.running = True
             self.toggle_button.config(text=self.stop_button_text)
